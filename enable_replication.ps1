@@ -4,6 +4,9 @@ param(
     [string] $VaultName,
     [string] $PrimaryRegion,
     [string] $RecoveryRegion,
+    [string] $diskEncryptionSetId,
+    [string] $keyEncryptionKeyUrl,
+    [string] $keyEncryptionVaultId,
     [string] $policyName = 'A2APolicy',
 	[string] $sourceVmARMIdsCSV,
 	[string] $TargetResourceGroupId,
@@ -319,14 +322,14 @@ foreach ($sourceVmArmId in $sourceVmARMIds) {
 
 	$osDisk =	New-AzRecoveryServicesAsrAzureToAzureDiskReplicationConfig -DiskId $Vm.StorageProfile.OsDisk.ManagedDisk.Id `
 		-LogStorageAccountId $PrimaryStagingStorageAccount -ManagedDisk  -RecoveryReplicaDiskAccountType $RecoveryReplicaDiskAccountType `
-		-RecoveryResourceGroupId  $TargetResourceGroupId -RecoveryTargetDiskAccountType $RecoveryTargetDiskAccountType          
+		-RecoveryResourceGroupId  $TargetResourceGroupId -RecoveryTargetDiskAccountType $RecoveryTargetDiskAccountType -RecoveryDiskEncryptionSetId $diskEncryptionSetId -KeyEncryptionKeyUrl $keyEncryptionKeyUrl -KeyEncryptionVaultId $keyEncryptionVaultId
 	$diskList.Add($osDisk)
 	
 	foreach($dataDisk in $script:AzureArtifactsInfo.Vm.StorageProfile.DataDisks)
 	{
 		$disk = New-AzRecoveryServicesAsrAzureToAzureDiskReplicationConfig -DiskId $dataDisk.ManagedDisk.Id `
 			-LogStorageAccountId $PrimaryStagingStorageAccount -ManagedDisk  -RecoveryReplicaDiskAccountType $RecoveryReplicaDiskAccountType `
-			-RecoveryResourceGroupId  $TargetResourceGroupId -RecoveryTargetDiskAccountType $RecoveryTargetDiskAccountType
+			-RecoveryResourceGroupId  $TargetResourceGroupId -RecoveryTargetDiskAccountType $RecoveryTargetDiskAccountType -RecoveryDiskEncryptionSetId $diskEncryptionSetId -KeyEncryptionKeyUrl $keyEncryptionKeyUrl -KeyEncryptionVaultId $keyEncryptionVaultId
 		$diskList.Add($disk)
 	}
 	
