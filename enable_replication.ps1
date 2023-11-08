@@ -4,16 +4,16 @@ param(
     [string] $VaultName,
     [string] $PrimaryRegion,
     [string] $RecoveryRegion,
-    [string] $diskEncryptionSetId,
-    [string] $keyEncryptionKeyUrl,
-    [string] $keyEncryptionVaultId,
     [string] $policyName = 'A2APolicy',
 	[string] $sourceVmARMIdsCSV,
 	[string] $TargetResourceGroupId,
     [string] $TargetVirtualNetworkId,
 	[string] $PrimaryStagingStorageAccount,
     [string] $RecoveryReplicaDiskAccountType = 'Standard_LRS',
-    [string] $RecoveryTargetDiskAccountType = 'Standard_LRS'
+    [string] $RecoveryTargetDiskAccountType = 'Standard_LRS',
+    [string] $RecoveryDiskEncryptionSetId,
+    [string] $KeyEncryptionKeyUrl,
+    [string] $KeyEncryptionVaultId
 )
 
 $CRLF = "`r`n"
@@ -322,14 +322,14 @@ foreach ($sourceVmArmId in $sourceVmARMIds) {
 
 	$osDisk =	New-AzRecoveryServicesAsrAzureToAzureDiskReplicationConfig -DiskId $Vm.StorageProfile.OsDisk.ManagedDisk.Id `
 		-LogStorageAccountId $PrimaryStagingStorageAccount -ManagedDisk  -RecoveryReplicaDiskAccountType $RecoveryReplicaDiskAccountType `
-		-RecoveryResourceGroupId  $TargetResourceGroupId -RecoveryTargetDiskAccountType $RecoveryTargetDiskAccountType -RecoveryDiskEncryptionSetId $diskEncryptionSetId -KeyEncryptionKeyUrl $keyEncryptionKeyUrl -KeyEncryptionVaultId $keyEncryptionVaultId
+		-RecoveryResourceGroupId  $TargetResourceGroupId -RecoveryTargetDiskAccountType $RecoveryTargetDiskAccountType -RecoveryDiskEncryptionSetId $RecoveryDiskEncryptionSetId -KeyEncryptionKeyUrl $KeyEncryptionKeyUrl -KeyEncryptionVaultId $KeyEncryptionVaultId
 	$diskList.Add($osDisk)
 	
 	foreach($dataDisk in $script:AzureArtifactsInfo.Vm.StorageProfile.DataDisks)
 	{
 		$disk = New-AzRecoveryServicesAsrAzureToAzureDiskReplicationConfig -DiskId $dataDisk.ManagedDisk.Id `
 			-LogStorageAccountId $PrimaryStagingStorageAccount -ManagedDisk  -RecoveryReplicaDiskAccountType $RecoveryReplicaDiskAccountType `
-			-RecoveryResourceGroupId  $TargetResourceGroupId -RecoveryTargetDiskAccountType $RecoveryTargetDiskAccountType -RecoveryDiskEncryptionSetId $diskEncryptionSetId -KeyEncryptionKeyUrl $keyEncryptionKeyUrl -KeyEncryptionVaultId $keyEncryptionVaultId
+			-RecoveryResourceGroupId  $TargetResourceGroupId -RecoveryTargetDiskAccountType $RecoveryTargetDiskAccountType -RecoveryDiskEncryptionSetId $RecoveryDiskEncryptionSetId -KeyEncryptionKeyUrl $KeyEncryptionKeyUrl -KeyEncryptionVaultId $KeyEncryptionVaultId
 		$diskList.Add($disk)
 	}
 	
